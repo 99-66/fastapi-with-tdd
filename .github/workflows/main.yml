@@ -81,7 +81,7 @@ jobs:
     needs: [build, test]
     env:
       HEROKU_APP_NAME: enigmatic-harbor-60860
-      HEKORU_REGISTRY_IMAGE: registry.heroku.com/${HEKORU_APP_NAME}/summarizer
+      HEROKU_REGISTRY_IMAGE: registry.heroku.com/${HEKORU_APP_NAME}/summarizer
     steps:
       - name: Checkout
         uses: actions/checkout@v2.4.0
