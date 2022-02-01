@@ -1,0 +1,33 @@
+# temp stage
+FROM python:3.8-slim-buster as builder
+
+WORKDIR /app
+
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONBUFFERED 1
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends gcc
+
+COPY requirements.txt .
+RUN pip wheel --no-cache-dir --no-deps --wheel-dir /wheels -r requirements.txt
+
+# final stage
+FROM python:3.8-slim-buster
+
+WORKDIR /app
+
+COPY --from=builder /wheels /wheels
+COPY --from=builder /app/requirements.txt .
+
+RUN apt-get update \
+    && apt-get install -y tzdata netcat \
+    && apt-get clean
+
+RUN pip install --no-cache /wheels/*
+COPY . .
+
+COPY ./entrypoint.sh .
+RUN chmod +x /app/entrypoint.sh
+
+ENTRYPOINT ["/app/entrypoint.sh"]
